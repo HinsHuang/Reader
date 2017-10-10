@@ -33,6 +33,12 @@ public class TopStory {
         private String ga_prefix;
         private String title;
 
+        public TopStoryBean(String image, String title) {
+            this.image = image;
+            this.title = title;
+        }
+
+
         public String getImage() {
             return image;
         }
