@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,8 +24,10 @@ import com.hins.reader.model.News;
 import com.hins.reader.model.Story;
 import com.hins.reader.model.TopStory;
 import com.hins.reader.network.HttpHelper;
+import com.hins.reader.util.DateUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -54,9 +57,9 @@ public class HomeFragment extends Fragment {
     TextView mHeaderTitle;
     Unbinder unbinder;
 
-
+    private SwipeRefreshLayout mSwipeRefresh;
     private RecyclerView mRecyclerView;
-    private HomeAdapter mAdapter;
+    private HomeAdapter mHomeAdapter;
     private LinearLayoutManager mLayoutManager;
 
     private News mNews;
@@ -67,6 +70,13 @@ public class HomeFragment extends Fragment {
 
     private View mHeaderView;
     private View mListView;
+
+    private boolean addHeader;
+
+    private Calendar mCalendar;
+    private int mYear;
+    private int mMonth;
+    private int mDay;
 
     private Handler mHandler = new Handler();
 
@@ -95,6 +105,16 @@ public class HomeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mStories = new ArrayList<>();
+        mTopStories = new ArrayList<>();
+
+        mCalendar = Calendar.getInstance();
+        mYear = mCalendar.get(Calendar.YEAR);
+        mMonth = mCalendar.get(Calendar.MONTH);
+        mDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+
+        Log.d(TAG, "onCreate: " + mYear + " " + mMonth + " " + mDay);
+
     }
 
     @Nullable
@@ -105,16 +125,55 @@ public class HomeFragment extends Fragment {
 
         unbinder = ButterKnife.bind(this, mHeaderView);
 
+        mSwipeRefresh = (SwipeRefreshLayout) mListView.findViewById(R.id.story_swipe_refresh);
+//        mSwipeRefresh.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary, R.color.colorAccent);
+        mSwipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initData();
+            }
+        });
+
         mRecyclerView = (RecyclerView) mListView.findViewById(recycler_view);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            boolean isSlidingToLast = false;
 
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                // 当不滚动时
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    // 获取最后一个完全显示的item position
+                    int lastVisibleItem = manager.findLastCompletelyVisibleItemPosition();
+                    int totalItemCount = manager.getItemCount();
+
+                    // 判断是否滚动到底部并且是向下滑动
+                    if (lastVisibleItem == (totalItemCount - 1) && isSlidingToLast) {
+                        mCalendar.set(mYear, mMonth, mDay--);
+                        Log.d("Testing", DateUtil.mFormat.format(mCalendar.getTime()));
+                        loadMore(DateUtil.mFormat.format(mCalendar.getTime()));
+                    }
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                isSlidingToLast = dy > 0;
+            }
+        });
         initData();
 
         return mListView;
     }
 
     private void initData() {
+        mSwipeRefresh.setRefreshing(true);
+
         HttpHelper.getInstance().getLatestNews()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -128,17 +187,15 @@ public class HomeFragment extends Fragment {
                     public void onNext(@NonNull News news) {
                         Log.d(TAG, "onNext: " + news.getDate() + " " + news.getStories().size() + " " + news.getTopStories().size());
                         mNews = news;
-                        mStories = mNews.getStories();
-                        setHeaderView();
-                        mAdapter = new HomeAdapter(mStories);
-                        mAdapter.setHeaderView(mHeaderView);
-                        mRecyclerView.setAdapter(mAdapter);
+                        initHeaderView();
+                        setListView(true, mNews.getStories());
+                        mSwipeRefresh.setRefreshing(false);
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
                         Log.e(TAG, "onError: ", e);
-
+                        mSwipeRefresh.setRefreshing(false);
                     }
 
                     @Override
@@ -148,8 +205,13 @@ public class HomeFragment extends Fragment {
                 });
     }
 
-    private void setHeaderView() {
+    private void initHeaderView() {
 
+        if (addHeader) {
+            return;
+        }
+
+        mTopStories.clear();
         mTopStories = mNews.getTopStories();
         int index = 0;
         mHeaderTitle.setText(mTopStories.get(index).getTitle());
@@ -185,7 +247,9 @@ public class HomeFragment extends Fragment {
             index++;
         }
 
-        mHeaderViewPager.setAdapter(new TopStoryAdapter(mTopStories, mImages));
+        mTopStoryAdapter = new TopStoryAdapter(mTopStories, mImages);
+
+        mHeaderViewPager.setAdapter(mTopStoryAdapter);
         mHeaderViewPager.setCurrentItem(Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2) % mTopStories.size());
 
         mHeaderViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -209,7 +273,6 @@ public class HomeFragment extends Fragment {
                 mHeaderIndicator.getChildAt(lastPosition).setSelected(false);
                 // 替换位置
                 lastPosition = position;
-
             }
 
             @Override
@@ -219,6 +282,54 @@ public class HomeFragment extends Fragment {
         });
 
         mHandler.postDelayed(mRunnable, 3000);
+
+    }
+
+    private void setListView(boolean isClear, List<Story> stories) {
+        if (isClear) {
+            mStories.clear();
+        }
+        mStories.addAll(stories);
+
+        if (mHomeAdapter == null) {
+            mHomeAdapter = new HomeAdapter(mStories);
+            mHomeAdapter.setHeaderView(mHeaderView);
+            addHeader = true;
+            mRecyclerView.setAdapter(mHomeAdapter);
+        } else {
+            mHomeAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+    private void loadMore(String date) {
+
+        HttpHelper.getInstance().getBeforeNews(date)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<News>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        Log.d(TAG, "loadMore() onSubscribe: " );
+                    }
+
+                    @Override
+                    public void onNext(@NonNull News news) {
+                        setListView(false, news.getStories());
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                        Log.e(TAG, "onError: ", e);
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onComplete: ");
+                    }
+                });
 
     }
 
