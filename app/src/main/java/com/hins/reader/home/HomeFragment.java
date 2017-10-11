@@ -131,7 +131,7 @@ public class HomeFragment extends Fragment {
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                initData();
+                refresh();
             }
         });
 
@@ -220,7 +220,7 @@ public class HomeFragment extends Fragment {
 
             ImageView imageView = new ImageView(getActivity());
 
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             Glide.with(this).load(s.getImage()).into(imageView);
 
@@ -322,7 +322,6 @@ public class HomeFragment extends Fragment {
                     public void onError(@NonNull Throwable e) {
 
                         Log.e(TAG, "onError: ", e);
-
                     }
 
                     @Override
@@ -330,7 +329,14 @@ public class HomeFragment extends Fragment {
                         Log.d(TAG, "onComplete: ");
                     }
                 });
+    }
 
+    private void refresh() {
+        mCalendar = Calendar.getInstance();
+        mYear = mCalendar.get(Calendar.YEAR);
+        mMonth = mCalendar.get(Calendar.MONTH);
+        mDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+        initData();
     }
 
     @Override
