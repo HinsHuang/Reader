@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +19,10 @@ import com.bumptech.glide.Glide;
 import com.hins.reader.R;
 import com.hins.reader.adapter.HomeAdapter;
 import com.hins.reader.adapter.TopStoryAdapter;
+import com.hins.reader.model.News;
+import com.hins.reader.model.Story;
 import com.hins.reader.model.TopStory;
-import com.hins.reader.model.TopStory.TopStoryBean;
+import com.hins.reader.network.HttpHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.hins.reader.R.id.recycler_view;
 
@@ -36,6 +44,8 @@ import static com.hins.reader.R.id.recycler_view;
 
 public class HomeFragment extends Fragment {
 
+    private static final String TAG = "HomeFragment";
+
     @BindView(R.id.header_view_pager)
     ViewPager mHeaderViewPager;
     @BindView(R.id.header_indicator)
@@ -44,15 +54,19 @@ public class HomeFragment extends Fragment {
     TextView mHeaderTitle;
     Unbinder unbinder;
 
+
     private RecyclerView mRecyclerView;
     private HomeAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
 
-
+    private News mNews;
     private TopStoryAdapter mTopStoryAdapter;
-    private TopStory mTopStory;
-    private List<TopStoryBean> mTopStoryBeans = new ArrayList<>();
+    private List<TopStory> mTopStories;
+    private List<Story> mStories;
     private List<ImageView> mImages = new ArrayList<>();
+
+    private View mHeaderView;
+    private View mListView;
 
     private Handler mHandler = new Handler();
 
@@ -81,64 +95,66 @@ public class HomeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTopStory = new TopStory();
-
-
-        mTopStoryBeans.add(
-                new TopStoryBean("https://pic3.zhimg.com/v2-ebad6c9dd59183ddcce8960115598b2e.jpg", "中国人第一次使用自己的射电望远镜找到新的脉冲星，此刻我想致敬两个人"));
-
-        mTopStoryBeans.add(
-                new TopStoryBean("https://pic1.zhimg.com/v2-68006720e6456dd0b6af85ea14eefc8c.jpg", "国庆档票房又破了新纪录，可惜 26 亿至少「注水」了 5 个亿")
-        );
-        mTopStoryBeans.add(
-                new TopStoryBean("https://pic1.zhimg.com/v2-1298a03d52221be4e9410ff171c54b30.jpg", "收了学生手机并当众砸烂，他们还是那句——「为了你好」")
-        );
-
-        mTopStoryBeans.add(
-                new TopStoryBean("https://pic3.zhimg.com/v2-1542e7e6acfd6b08697ba65cf1d9c20a.jpg", "演过《大空头》的 Thaler 拿了诺奖，他是行为经济学真正的奠基人")
-        );
-        mTopStoryBeans.add(
-                new TopStoryBean("https://pic4.zhimg.com/v2-7619627a9b8afd320a1a9ce1a70b7283.jpg", "看看马再看看自己，感觉人类的进化好失败啊")
-        );
-
-        mTopStory.setTop_stories(mTopStoryBeans);
-
-
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View childView = inflater.inflate(R.layout.header_images, container, false);
+        mHeaderView = inflater.inflate(R.layout.header_images, container, false);
+        mListView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        unbinder = ButterKnife.bind(this, mHeaderView);
 
-        mRecyclerView = (RecyclerView) rootView.findViewById(recycler_view);
-
+        mRecyclerView = (RecyclerView) mListView.findViewById(recycler_view);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new HomeAdapter(mTopStoryBeans);
+        initData();
 
-        mAdapter.setHeaderView(childView);
-
-        mRecyclerView.setAdapter(mAdapter);
-
-
-        unbinder = ButterKnife.bind(this, childView);
-
-        initView();
-        return rootView;
+        return mListView;
     }
 
-    private void initView() {
+    private void initData() {
+        HttpHelper.getInstance().getLatestNews()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<News>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        Log.d(TAG, "onSubscribe: ");
+                    }
 
+                    @Override
+                    public void onNext(@NonNull News news) {
+                        Log.d(TAG, "onNext: " + news.getDate() + " " + news.getStories().size() + " " + news.getTopStories().size());
+                        mNews = news;
+                        mStories = mNews.getStories();
+                        setHeaderView();
+                        mAdapter = new HomeAdapter(mStories);
+                        mAdapter.setHeaderView(mHeaderView);
+                        mRecyclerView.setAdapter(mAdapter);
+                    }
 
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.e(TAG, "onError: ", e);
 
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onComplete: ");
+                    }
+                });
+    }
+
+    private void setHeaderView() {
+
+        mTopStories = mNews.getTopStories();
         int index = 0;
-        mHeaderTitle.setText(mTopStory.getTop_stories().get(index).getTitle());
+        mHeaderTitle.setText(mTopStories.get(index).getTitle());
 
-        for (TopStoryBean s : mTopStory.getTop_stories()) {
+        for (TopStory s : mTopStories) {
 
             ImageView imageView = new ImageView(getActivity());
 
@@ -147,8 +163,6 @@ public class HomeFragment extends Fragment {
             Glide.with(this).load(s.getImage()).into(imageView);
 
             mImages.add(imageView);
-
-
 
             ImageView pointImage = new ImageView(getActivity());
             pointImage.setImageResource(R.drawable.shape_point_selector);
@@ -171,7 +185,8 @@ public class HomeFragment extends Fragment {
             index++;
         }
 
-        mHeaderViewPager.setAdapter(new TopStoryAdapter(mTopStory, mImages));
+        mHeaderViewPager.setAdapter(new TopStoryAdapter(mTopStories, mImages));
+        mHeaderViewPager.setCurrentItem(Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2) % mTopStories.size());
 
         mHeaderViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -180,21 +195,18 @@ public class HomeFragment extends Fragment {
             }
 
             int lastPosition;
+
             @Override
             public void onPageSelected(int position) {
 
                 // 页面被选中
-
                 // 修改position
                 position = position % mImages.size();
-
-                mHeaderTitle.setText(mTopStory.getTop_stories().get(position).getTitle());
-
+                mHeaderTitle.setText(mTopStories.get(position).getTitle());
                 // 设置当前页面选中
                 mHeaderIndicator.getChildAt(position).setSelected(true);
                 // 设置前一页不选中
                 mHeaderIndicator.getChildAt(lastPosition).setSelected(false);
-
                 // 替换位置
                 lastPosition = position;
 
@@ -206,13 +218,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
-
         mHandler.postDelayed(mRunnable, 3000);
-
-
-
-
 
     }
 

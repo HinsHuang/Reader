@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.hins.reader.R;
-import com.hins.reader.model.TopStory.TopStoryBean;
+import com.hins.reader.model.Story;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     private View mHeaderView;
 
     private Context mContext;
-    private List<TopStoryBean> mTopStories;
+    private List<Story> mStories;
 
     public void setHeaderView(View headerView) {
         mHeaderView = headerView;
@@ -67,8 +67,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         }
     }
 
-    public HomeAdapter(List<TopStoryBean> topStories) {
-        mTopStories = topStories;
+    public HomeAdapter(List<Story> stories) {
+        mStories = stories;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 int position = getRealPosition(holder);
-                TopStoryBean title = mTopStories.get(position);
+                Story title = mStories.get(position);
 //                ZhihuDetailStoryActivity.start(mContext, title.getId());
                 Toast.makeText(mContext, "Clicked " + position, Toast.LENGTH_SHORT).show();
             }
@@ -102,9 +102,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         int pos = getRealPosition(holder);
 
-        TopStoryBean title = mTopStories.get(pos);
+        Story title = mStories.get(pos);
         holder.titleTextView.setText(title.getTitle());
-        Glide.with(mContext).load(title.getImage()).into(holder.titleImage);
+        Glide.with(mContext).load(title.getImages().get(0)).into(holder.titleImage);
     }
 
     private int getRealPosition(ViewHolder holder) {
@@ -114,6 +114,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mHeaderView == null ? mTopStories.size() : mTopStories.size() + 1;
+        return mHeaderView == null ? mStories.size() : mStories.size() + 1;
     }
 }

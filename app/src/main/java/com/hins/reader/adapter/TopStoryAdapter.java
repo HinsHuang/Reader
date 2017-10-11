@@ -16,11 +16,11 @@ import java.util.List;
 public class TopStoryAdapter extends PagerAdapter {
 
 
-    private TopStory mTopStory;
+    private List<TopStory> mTopStories;
     private List<ImageView> mImageViews;
 
-    public TopStoryAdapter(TopStory topStory, List<ImageView> imageViews) {
-        mTopStory = topStory;
+    public TopStoryAdapter(List<TopStory> topStories, List<ImageView> imageViews) {
+        mTopStories = topStories;
         mImageViews = imageViews;
     }
 
@@ -39,9 +39,15 @@ public class TopStoryAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         position = position % mImageViews.size();
 
-        container.addView(mImageViews.get(position));
+        View v = mImageViews.get(position);
 
-        return mImageViews.get(position);
+        if (v.getParent() != null) {
+            ((ViewGroup)v.getParent()).removeView(v);
+        }
+
+        container.addView(v);
+
+        return v;
     }
 
     @Override
