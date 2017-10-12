@@ -3,7 +3,6 @@ package com.hins.reader.home;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.hins.reader.R;
 import com.hins.reader.adapter.HomeAdapter;
 import com.hins.reader.adapter.TopStoryAdapter;
+import com.hins.reader.base.BasePagerFragment;
 import com.hins.reader.model.News;
 import com.hins.reader.model.Story;
 import com.hins.reader.model.TopStory;
@@ -45,7 +45,7 @@ import static com.hins.reader.R.id.recycler_view;
  * Created by Hins on 2017/10/10.
  */
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends BasePagerFragment {
 
     private static final String TAG = "HomeFragment";
 
@@ -78,11 +78,19 @@ public class HomeFragment extends Fragment {
     private int mMonth;
     private int mDay;
 
+    private boolean isRunning;
+
     private Handler mHandler = new Handler();
 
     private Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
+            // 一直给自己发消息
+            mHandler.postDelayed(this, 3000);
+            
+            if (!isRunning) {
+                return;
+            }
             int currentPosition = mHeaderViewPager.getCurrentItem();
 
             if (currentPosition == mHeaderViewPager.getAdapter().getCount() - 1) {
@@ -91,9 +99,6 @@ public class HomeFragment extends Fragment {
             } else {
                 mHeaderViewPager.setCurrentItem(currentPosition + 1);
             }
-
-            // 一直给自己发消息
-            mHandler.postDelayed(this, 3000);
         }
     };
 
@@ -113,7 +118,7 @@ public class HomeFragment extends Fragment {
         mMonth = mCalendar.get(Calendar.MONTH);
         mDay = mCalendar.get(Calendar.DAY_OF_MONTH);
 
-        Log.d(TAG, "onCreate: " + mYear + " " + mMonth + " " + mDay);
+        Log.d(TAG, "onCreate: ");
 
     }
 
@@ -126,8 +131,8 @@ public class HomeFragment extends Fragment {
         unbinder = ButterKnife.bind(this, mHeaderView);
 
         mSwipeRefresh = (SwipeRefreshLayout) mListView.findViewById(R.id.story_swipe_refresh);
-//        mSwipeRefresh.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary, R.color.colorAccent);
-        mSwipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+        mSwipeRefresh.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary, R.color.colorAccent);
+//        mSwipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -146,6 +151,15 @@ public class HomeFragment extends Fragment {
                 LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+
+                    // 用于判断当头部完全不可见时，图片轮播停止
+                    int firstVisibleItem = manager.findFirstCompletelyVisibleItemPosition();
+                    if (firstVisibleItem < 2) {
+                        onVisible();
+                    } else {
+                        onInvisible();
+                    }
+                    
                     // 获取最后一个完全显示的item position
                     int lastVisibleItem = manager.findLastCompletelyVisibleItemPosition();
                     int totalItemCount = manager.getItemCount();
@@ -166,12 +180,14 @@ public class HomeFragment extends Fragment {
                 isSlidingToLast = dy > 0;
             }
         });
-        initData();
+        
+        Log.d(TAG, "onCreateView: ");
 
         return mListView;
     }
 
-    private void initData() {
+    @Override
+    protected void initData() {
         mSwipeRefresh.setRefreshing(true);
 
         HttpHelper.getInstance().getLatestNews()
@@ -203,6 +219,8 @@ public class HomeFragment extends Fragment {
                         Log.d(TAG, "onComplete: ");
                     }
                 });
+
+        Log.d(TAG, "initData: ");
     }
 
     private void initHeaderView() {
@@ -211,6 +229,8 @@ public class HomeFragment extends Fragment {
             return;
         }
 
+        Log.d(TAG, "initHeaderView: ");
+        
         mTopStories.clear();
         mTopStories = mNews.getTopStories();
         int index = 0;
@@ -218,15 +238,17 @@ public class HomeFragment extends Fragment {
 
         for (TopStory s : mTopStories) {
 
-            ImageView imageView = new ImageView(getActivity());
+            ImageView imageView = new ImageView(mContext);
 
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-            Glide.with(this).load(s.getImage()).into(imageView);
+            Glide.with(mContext).load(s.getImage()).into(imageView);
+
+//            Picasso.with(mContext).load(s.getImage()).into(imageView);
 
             mImages.add(imageView);
 
-            ImageView pointImage = new ImageView(getActivity());
+            ImageView pointImage = new ImageView(mContext);
             pointImage.setImageResource(R.drawable.shape_point_selector);
 
             int pointSize = getResources().getDimensionPixelSize(R.dimen.point_size);
@@ -248,9 +270,10 @@ public class HomeFragment extends Fragment {
         }
 
         mTopStoryAdapter = new TopStoryAdapter(mTopStories, mImages);
-
         mHeaderViewPager.setAdapter(mTopStoryAdapter);
         mHeaderViewPager.setCurrentItem(Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2) % mTopStories.size());
+
+        mHandler.postDelayed(mRunnable, 3000);
 
         mHeaderViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -259,7 +282,6 @@ public class HomeFragment extends Fragment {
             }
 
             int lastPosition;
-
             @Override
             public void onPageSelected(int position) {
 
@@ -280,9 +302,6 @@ public class HomeFragment extends Fragment {
 
             }
         });
-
-        mHandler.postDelayed(mRunnable, 3000);
-
     }
 
     private void setListView(boolean isClear, List<Story> stories) {
@@ -293,13 +312,13 @@ public class HomeFragment extends Fragment {
 
         if (mHomeAdapter == null) {
             mHomeAdapter = new HomeAdapter(mStories);
+            //设置头部
             mHomeAdapter.setHeaderView(mHeaderView);
             addHeader = true;
             mRecyclerView.setAdapter(mHomeAdapter);
         } else {
             mHomeAdapter.notifyDataSetChanged();
         }
-
     }
 
     private void loadMore(String date) {
@@ -310,7 +329,6 @@ public class HomeFragment extends Fragment {
                 .subscribe(new Observer<News>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-                        Log.d(TAG, "loadMore() onSubscribe: " );
                     }
 
                     @Override
@@ -320,7 +338,6 @@ public class HomeFragment extends Fragment {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-
                         Log.e(TAG, "onError: ", e);
                     }
 
@@ -340,9 +357,28 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
+
+    @Override
+    protected void onVisible() {
+        super.onVisible();
+        isRunning = true;
+    }
+
+    @Override
+    protected void onInvisible() {
+        super.onInvisible();
+        isRunning = false;
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
         mHandler.removeCallbacks(mRunnable);
+        Log.d(TAG, "onDestroyView: ");
     }
 }
