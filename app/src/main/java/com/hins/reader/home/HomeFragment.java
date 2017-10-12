@@ -119,7 +119,6 @@ public class HomeFragment extends BasePagerFragment {
         mDay = mCalendar.get(Calendar.DAY_OF_MONTH);
 
         Log.d(TAG, "onCreate: ");
-
     }
 
     @Nullable
@@ -239,22 +238,14 @@ public class HomeFragment extends BasePagerFragment {
         for (TopStory s : mTopStories) {
 
             ImageView imageView = new ImageView(mContext);
-
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
             Glide.with(mContext).load(s.getImage()).into(imageView);
-
-//            Picasso.with(mContext).load(s.getImage()).into(imageView);
-
             mImages.add(imageView);
 
             ImageView pointImage = new ImageView(mContext);
             pointImage.setImageResource(R.drawable.shape_point_selector);
-
             int pointSize = getResources().getDimensionPixelSize(R.dimen.point_size);
-
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(pointSize, pointSize);
-
             if (index > 0) {
                 params.leftMargin = getResources().getDimensionPixelSize(R.dimen.point_margin);
                 pointImage.setSelected(false);
@@ -263,9 +254,7 @@ public class HomeFragment extends BasePagerFragment {
             }
 
             pointImage.setLayoutParams(params);
-
             mHeaderIndicator.addView(pointImage);
-
             index++;
         }
 
@@ -284,7 +273,6 @@ public class HomeFragment extends BasePagerFragment {
             int lastPosition;
             @Override
             public void onPageSelected(int position) {
-
                 // 页面被选中
                 // 修改position
                 position = position % mImages.size();
