@@ -3,17 +3,16 @@ package com.hins.reader.adapter;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.hins.reader.R;
 import com.hins.reader.model.Story;
+import com.hins.reader.ui.detail.StoryDetailActivity;
 
 import java.util.List;
 
@@ -88,9 +87,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 int position = getRealPosition(holder);
-                Story title = mStories.get(position);
-//                ZhihuDetailStoryActivity.start(mContext, title.getId());
-                Toast.makeText(mContext, "Clicked " + position, Toast.LENGTH_SHORT).show();
+                Story story = mStories.get(position);
+                StoryDetailActivity.start(mContext, story.getId());
             }
         });
         return holder;

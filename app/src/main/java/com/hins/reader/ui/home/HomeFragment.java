@@ -258,7 +258,7 @@ public class HomeFragment extends BasePagerFragment {
             index++;
         }
 
-        mTopStoryAdapter = new TopStoryAdapter(mTopStories, mImages);
+        mTopStoryAdapter = new TopStoryAdapter(mContext, mTopStories, mImages);
         mHeaderViewPager.setAdapter(mTopStoryAdapter);
         mHeaderViewPager.setCurrentItem(Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2) % mTopStories.size());
 

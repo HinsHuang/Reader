@@ -20,6 +20,8 @@
         </activity>
         <activity android:name=".ui.home.SettingActivity">
         </activity>
+        <activity android:name=".ui.detail.StoryDetailActivity">
+        </activity>
     </application>
 
 </manifest>
