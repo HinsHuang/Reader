@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,15 +30,11 @@ import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.hins.reader.R.id.recycler_view;
 
 /**
  * Created by Hins on 2017/10/10.
@@ -49,18 +44,17 @@ public class HomeFragment extends BasePagerFragment {
 
     private static final String TAG = "HomeFragment";
 
-    @BindView(R.id.header_view_pager)
-    ViewPager mHeaderViewPager;
-    @BindView(R.id.header_indicator)
-    LinearLayout mHeaderIndicator;
-    @BindView(R.id.header_title)
-    TextView mHeaderTitle;
-    Unbinder unbinder;
+    @BindView(R.id.story_swipe_refresh)
+    SwipeRefreshLayout mSwipeRefresh;
+    @BindView(R.id.recycler_view)
+    RecyclerView mRecyclerView;
 
-    private SwipeRefreshLayout mSwipeRefresh;
-    private RecyclerView mRecyclerView;
     private HomeAdapter mHomeAdapter;
     private LinearLayoutManager mLayoutManager;
+
+    private ViewPager mHeaderViewPager;
+    private LinearLayout mHeaderIndicator;
+    private TextView mHeaderTitle;
 
     private News mNews;
     private TopStoryAdapter mTopStoryAdapter;
@@ -69,7 +63,6 @@ public class HomeFragment extends BasePagerFragment {
     private List<ImageView> mImages = new ArrayList<>();
 
     private View mHeaderView;
-    private View mListView;
 
     private boolean addHeader;
 
@@ -121,15 +114,19 @@ public class HomeFragment extends BasePagerFragment {
         Log.d(TAG, "onCreate: ");
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mHeaderView = inflater.inflate(R.layout.header_images, container, false);
-        mListView = inflater.inflate(R.layout.fragment_home, container, false);
+    protected int getLayoutResID() {
+        return R.layout.fragment_home;
+    }
 
-        unbinder = ButterKnife.bind(this, mHeaderView);
+    @Override
+    protected void initView() {
+        mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.header_images, mContainer, false);
 
-        mSwipeRefresh = (SwipeRefreshLayout) mListView.findViewById(R.id.story_swipe_refresh);
+        mHeaderViewPager = (ViewPager) mHeaderView.findViewById(R.id.header_view_pager);
+        mHeaderIndicator = (LinearLayout) mHeaderView.findViewById(R.id.header_indicator);
+        mHeaderTitle = (TextView) mHeaderView.findViewById(R.id.header_title);
+
         mSwipeRefresh.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary, R.color.colorAccent);
 //        mSwipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -139,7 +136,6 @@ public class HomeFragment extends BasePagerFragment {
             }
         });
 
-        mRecyclerView = (RecyclerView) mListView.findViewById(recycler_view);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -158,7 +154,7 @@ public class HomeFragment extends BasePagerFragment {
                     } else {
                         onInvisible();
                     }
-                    
+
                     // 获取最后一个完全显示的item position
                     int lastVisibleItem = manager.findLastCompletelyVisibleItemPosition();
                     int totalItemCount = manager.getItemCount();
@@ -179,10 +175,6 @@ public class HomeFragment extends BasePagerFragment {
                 isSlidingToLast = dy > 0;
             }
         });
-        
-        Log.d(TAG, "onCreateView: ");
-
-        return mListView;
     }
 
     @Override
@@ -203,7 +195,7 @@ public class HomeFragment extends BasePagerFragment {
                         Log.d(TAG, "onNext: " + news.getDate() + " " + news.getStories().size() + " " + news.getTopStories().size());
                         mNews = news;
                         initHeaderView();
-                        setListView(true, mNews.getStories());
+                        setRecyclerView(true, mNews.getStories());
                         mSwipeRefresh.setRefreshing(false);
                     }
 
@@ -292,7 +284,7 @@ public class HomeFragment extends BasePagerFragment {
         });
     }
 
-    private void setListView(boolean isClear, List<Story> stories) {
+    private void setRecyclerView(boolean isClear, List<Story> stories) {
         if (isClear) {
             mStories.clear();
         }
@@ -321,7 +313,7 @@ public class HomeFragment extends BasePagerFragment {
 
                     @Override
                     public void onNext(@NonNull News news) {
-                        setListView(false, news.getStories());
+                        setRecyclerView(false, news.getStories());
                     }
 
                     @Override
@@ -365,7 +357,6 @@ public class HomeFragment extends BasePagerFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        unbinder.unbind();
         mHandler.removeCallbacks(mRunnable);
         Log.d(TAG, "onDestroyView: ");
     }

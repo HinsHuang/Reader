@@ -22,6 +22,8 @@
         </activity>
         <activity android:name=".ui.detail.StoryDetailActivity">
         </activity>
+        <activity android:name=".ui.bigimage.BigImageActivity">
+        </activity>
     </application>
 
 </manifest>

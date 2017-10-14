@@ -1,5 +1,6 @@
 package com.hins.reader.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,31 +10,17 @@ import java.util.List;
 public class StoryDetail {
 
 
-    /**
-     * body :
-     * image_source : 《一树梨花压海棠》
-     * title : 恋童是一种「疾病」还是一种「性取向」？
-     * image : https://pic2.zhimg.com/v2-668a762511a547d8627b7864475e0d99.jpg
-     * share_url : http://daily.zhihu.com/story/9590958
-     * js : []
-     * ga_prefix : 082811
-     * images : ["https://pic4.zhimg.com/v2-62d709bed8c2cebe8e1bbd4d96fbf18b.jpg"]
-     * type : 0
-     * id : 9590958
-     * css : ["http://news-at.zhihu.com/css/news_qa.auto.css?v=4b3e3"]
-     */
-
     private String body;
     private String image_source;
     private String title;
     private String image;
     private String share_url;
+    private ArrayList<String> js;
     private String ga_prefix;
+    private ArrayList<String> images;
     private int type;
     private int id;
-    private List<?> js;
-    private List<String> images;
-    private List<String> css;
+    private ArrayList<String> css;
 
     public String getBody() {
         return body;
@@ -75,12 +62,28 @@ public class StoryDetail {
         this.share_url = share_url;
     }
 
+    public ArrayList<String> getJs() {
+        return js;
+    }
+
+    public void setJs(ArrayList<String> js) {
+        this.js = js;
+    }
+
     public String getGa_prefix() {
         return ga_prefix;
     }
 
     public void setGa_prefix(String ga_prefix) {
         this.ga_prefix = ga_prefix;
+    }
+
+    public ArrayList<String> getImages() {
+        return images;
+    }
+
+    public void setImages(ArrayList<String> images) {
+        this.images = images;
     }
 
     public int getType() {
@@ -99,27 +102,11 @@ public class StoryDetail {
         this.id = id;
     }
 
-    public List<?> getJs() {
-        return js;
-    }
-
-    public void setJs(List<?> js) {
-        this.js = js;
-    }
-
-    public List<String> getImages() {
-        return images;
-    }
-
-    public void setImages(List<String> images) {
-        this.images = images;
-    }
-
-    public List<String> getCss() {
+    public ArrayList<String> getCss() {
         return css;
     }
 
-    public void setCss(List<String> css) {
+    public void setCss(ArrayList<String> css) {
         this.css = css;
     }
 }

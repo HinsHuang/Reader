@@ -62,8 +62,8 @@ public class MainFragment extends Fragment {
         mTitles.add("干货美图");
 
         mFragments.add(HomeFragment.newInstance());
-        mFragments.add(GanhuoFragment.newInstance());
         mFragments.add(PhotoFragment.newInstance());
+        mFragments.add(GanhuoFragment.newInstance());
 
         mMainPagerAdapter = new MainPagerAdapter(getChildFragmentManager(), mFragments, mTitles);
 
