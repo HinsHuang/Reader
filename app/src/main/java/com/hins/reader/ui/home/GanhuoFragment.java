@@ -1,4 +1,4 @@
-package com.hins.reader.home;
+package com.hins.reader.ui.home;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,27 +11,28 @@ import com.hins.reader.R;
 import com.hins.reader.base.BasePagerFragment;
 
 /**
- * Created by Hins on 2017/10/10.
+ * Created by Hins on 2017/10/11.
  */
 
-public class PhotoFragment extends BasePagerFragment {
+public class GanhuoFragment extends BasePagerFragment {
 
-    private static final String TAG = "PhotoFragment";
+    private static final String TAG = "GanhuoFragment";
 
-    public static PhotoFragment newInstance() {
-        return new PhotoFragment();
+    public static GanhuoFragment newInstance() {
+        return new GanhuoFragment();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Log.d(TAG, "onCreate: ");
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_photo, container, false);
+        View view = inflater.inflate(R.layout.fragment_ganhuo, container, false);
         return view;
     }
 

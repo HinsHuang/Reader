@@ -1,4 +1,4 @@
-package com.hins.reader.home;
+package com.hins.reader.ui.home;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
