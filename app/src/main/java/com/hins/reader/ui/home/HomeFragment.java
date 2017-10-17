@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.hins.reader.R;
 import com.hins.reader.adapter.HomeAdapter;
-import com.hins.reader.adapter.TopStoryAdapter;
+import com.hins.reader.adapter.TopStoryPagerAdapter;
 import com.hins.reader.base.BasePagerFragment;
 import com.hins.reader.model.News;
 import com.hins.reader.model.Story;
@@ -57,7 +57,7 @@ public class HomeFragment extends BasePagerFragment {
     private TextView mHeaderTitle;
 
     private News mNews;
-    private TopStoryAdapter mTopStoryAdapter;
+    private TopStoryPagerAdapter mTopStoryAdapter;
     private List<TopStory> mTopStories;
     private List<Story> mStories;
     private List<ImageView> mImages = new ArrayList<>();
@@ -245,7 +245,7 @@ public class HomeFragment extends BasePagerFragment {
             index++;
         }
 
-        mTopStoryAdapter = new TopStoryAdapter(mContext, mTopStories, mImages);
+        mTopStoryAdapter = new TopStoryPagerAdapter(mContext, mTopStories, mImages);
         mHeaderViewPager.setAdapter(mTopStoryAdapter);
         mHeaderViewPager.setCurrentItem(Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2) % mTopStories.size());
 

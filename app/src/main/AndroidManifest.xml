@@ -25,6 +25,8 @@
         </activity>
         <activity android:name=".ui.bigimage.BigImageActivity">
         </activity>
+        <activity android:name=".ui.bigimage.PhotoViewActivity">
+        </activity>
     </application>
 
 </manifest>

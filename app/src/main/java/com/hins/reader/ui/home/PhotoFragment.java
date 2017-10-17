@@ -82,10 +82,10 @@ public class PhotoFragment extends BasePagerFragment {
                 //当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     // 获取最后一个完全显示的item position
-                    int lastVisiableItem = manager.findLastCompletelyVisibleItemPosition();
+                    int lastVisiableItem = manager.findLastVisibleItemPosition();
                     int totalItemCount = manager.getItemCount();
                     // 判断是否滚动到底部并且是向下滑动
-                    if (lastVisiableItem == (totalItemCount - 1) && isSlidingToLast) {
+                    if (lastVisiableItem == (totalItemCount - 1) ) {
                         loadMore();
                     }
                 }

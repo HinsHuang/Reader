@@ -2,7 +2,6 @@ package com.hins.reader.adapter;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,14 +15,14 @@ import java.util.List;
  * Created by Hins on 2017/10/10.
  */
 
-public class TopStoryAdapter extends PagerAdapter {
+public class TopStoryPagerAdapter extends PagerAdapter {
 
 
     private Context mContext;
     private List<TopStory> mTopStories;
     private List<ImageView> mImageViews;
 
-    public TopStoryAdapter(Context context, List<TopStory> topStories, List<ImageView> imageViews) {
+    public TopStoryPagerAdapter(Context context, List<TopStory> topStories, List<ImageView> imageViews) {
         mContext = context;
         mTopStories = topStories;
         mImageViews = imageViews;
@@ -65,6 +64,6 @@ public class TopStoryAdapter extends PagerAdapter {
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
 //        super.destroyItem(container, position, object);
-//        container.removeView((View) object);
+        container.removeView((View) object);
     }
 }
