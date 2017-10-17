@@ -22,7 +22,7 @@ import com.hins.reader.base.BasePagerFragment;
 import com.hins.reader.model.News;
 import com.hins.reader.model.Story;
 import com.hins.reader.model.TopStory;
-import com.hins.reader.network.HttpHelper;
+import com.hins.reader.network.ZhihuHttpHelper;
 import com.hins.reader.util.DateUtil;
 
 import java.util.ArrayList;
@@ -136,17 +136,15 @@ public class HomeFragment extends BasePagerFragment {
             }
         });
 
-        mLayoutManager = new LinearLayoutManager(getActivity());
+        mLayoutManager = new LinearLayoutManager(mContext);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             boolean isSlidingToLast = false;
-
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                // 当不滚动时
+                //当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-
                     // 用于判断当头部完全不可见时，图片轮播停止
                     int firstVisibleItem = manager.findFirstCompletelyVisibleItemPosition();
                     if (firstVisibleItem < 2) {
@@ -154,18 +152,14 @@ public class HomeFragment extends BasePagerFragment {
                     } else {
                         onInvisible();
                     }
-
-                    // 获取最后一个完全显示的item position
                     int lastVisibleItem = manager.findLastCompletelyVisibleItemPosition();
                     int totalItemCount = manager.getItemCount();
-
-                    // 判断是否滚动到底部并且是向下滑动
+                    // 判断是否滚动到底并且是向下滑动
                     if (lastVisibleItem == (totalItemCount - 1) && isSlidingToLast) {
-                        mCalendar.set(mYear, mMonth, mDay--);
-                        Log.d("Testing", DateUtil.mFormat.format(mCalendar.getTime()));
-                        loadMore(DateUtil.mFormat.format(mCalendar.getTime()));
+                        loadMore();
                     }
                 }
+
                 super.onScrollStateChanged(recyclerView, newState);
             }
 
@@ -175,13 +169,14 @@ public class HomeFragment extends BasePagerFragment {
                 isSlidingToLast = dy > 0;
             }
         });
+
     }
 
     @Override
     protected void initData() {
         mSwipeRefresh.setRefreshing(true);
 
-        HttpHelper.getInstance().getLatestNews()
+        ZhihuHttpHelper.getInstance().getLatestNews()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<News>() {
@@ -301,9 +296,11 @@ public class HomeFragment extends BasePagerFragment {
         }
     }
 
-    private void loadMore(String date) {
+    private void loadMore() {
 
-        HttpHelper.getInstance().getBeforeNews(date)
+        mCalendar.set(mYear, mMonth, mDay--);
+
+        ZhihuHttpHelper.getInstance().getBeforeNews(DateUtil.mFormat.format(mCalendar.getTime()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<News>() {

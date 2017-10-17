@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.hins.reader.R;
 import com.hins.reader.model.StoryDetail;
-import com.hins.reader.network.HttpHelper;
+import com.hins.reader.network.ZhihuHttpHelper;
 import com.hins.reader.ui.bigimage.BigImageActivity;
 
 import butterknife.BindView;
@@ -78,7 +78,7 @@ public class StoryDetailActivity extends AppCompatActivity {
     }
 
      public void initData(int id) {
-        HttpHelper.getInstance().getStoryDetail(id)
+        ZhihuHttpHelper.getInstance().getStoryDetail(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<StoryDetail>() {
@@ -192,8 +192,5 @@ public class StoryDetailActivity extends AppCompatActivity {
         }
         return true;
     }
-
-
-
 
 }

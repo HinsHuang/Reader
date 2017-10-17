@@ -1,5 +1,6 @@
 package com.hins.reader.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -14,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.hins.reader.R;
+import com.hins.reader.ui.setting.SettingActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,7 +60,10 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.home:
-                        mDrawerLayout.closeDrawers();
+//                        mDrawerLayout.closeDrawers();
+                        Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                        startActivity(intent);
+
                         break;
                     default:
                         break;

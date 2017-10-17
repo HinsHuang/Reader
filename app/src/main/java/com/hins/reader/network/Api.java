@@ -1,5 +1,6 @@
 package com.hins.reader.network;
 
+import com.hins.reader.model.GankResult;
 import com.hins.reader.model.News;
 import com.hins.reader.model.StoryDetail;
 
@@ -22,4 +23,8 @@ public interface Api {
     @GET("api/4/news/{id}")
     Observable<StoryDetail> getStoryDetail(@Path("id") int id);
 
+    @GET("api/data/{category}/{size}/{page}")
+    Observable<GankResult> getGankItemByCategory(@Path("category") String category,
+                                                 @Path("size") int size,
+                                                 @Path("page") int page);
 }

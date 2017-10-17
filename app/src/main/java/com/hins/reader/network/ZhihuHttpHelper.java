@@ -13,12 +13,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Hins on 2017/10/11.
  */
 
-public class HttpHelper {
+public class ZhihuHttpHelper {
 
-    private static HttpHelper INSTANCE;
+    private static ZhihuHttpHelper INSTANCE;
     private static Retrofit mRetrofit;
 
-    private HttpHelper() {
+    private ZhihuHttpHelper() {
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(Urls.ZHIHU_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -26,11 +26,11 @@ public class HttpHelper {
                 .build();
     }
 
-    public static HttpHelper getInstance() {
+    public static ZhihuHttpHelper getInstance() {
         if (INSTANCE == null) {
-            synchronized (HttpHelper.class) {
+            synchronized (ZhihuHttpHelper.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new HttpHelper();
+                    INSTANCE = new ZhihuHttpHelper();
                 }
             }
         }
