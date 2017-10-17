@@ -106,7 +106,7 @@ public class PhotoFragment extends BasePagerFragment {
 
         mPhotoSwipeRefresh.setRefreshing(true);
 
-        GankHttpHelper.getInstance().getGankItemByCategory(mCategory, mSize, mPage)
+        GankHttpHelper.getInstance().getGankItemByCategory(mCategory, mSize)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<GankResult>() {
@@ -140,7 +140,7 @@ public class PhotoFragment extends BasePagerFragment {
     private void loadMore() {
         Log.d(TAG, "loadMore: ");
 
-        GankHttpHelper.getInstance().getGankItemByCategory(mCategory, mSize, ++mPage)
+        GankHttpHelper.getInstance().getGankItemByCategory(mCategory, mSize)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<GankResult>() {

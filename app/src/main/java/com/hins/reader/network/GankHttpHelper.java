@@ -38,11 +38,12 @@ public class GankHttpHelper {
 
     /**
      * 分类数据: http://gank.io/api/data/数据类型/请求个数/第几页
+     * 随机数据：http://gank.io/api/random/data/分类/个数
      * @return
      */
-    public Observable<GankResult> getGankItemByCategory(String category, int size, int page) {
+    public Observable<GankResult> getGankItemByCategory(String category, int size) {
         return mRetrofit.create(Api.class)
-                .getGankItemByCategory(category, size, page);
+                .getGankRandomPhoto(category, size);
     }
 
 }

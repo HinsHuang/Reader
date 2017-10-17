@@ -8,4 +8,7 @@
     <color name="tab_layout_text_color">#565454</color>
     <color name="tab_layout_selected_text_color">#0F88EB</color>
     <color name="text_color">#000000</color>
+
+    <color name="md_black">#000000</color>
+    <color name="md_white">#ffffff</color>
 </resources>

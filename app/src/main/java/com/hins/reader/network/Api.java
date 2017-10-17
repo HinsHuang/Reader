@@ -23,8 +23,8 @@ public interface Api {
     @GET("api/4/news/{id}")
     Observable<StoryDetail> getStoryDetail(@Path("id") int id);
 
-    @GET("api/data/{category}/{size}/{page}")
-    Observable<GankResult> getGankItemByCategory(@Path("category") String category,
-                                                 @Path("size") int size,
-                                                 @Path("page") int page);
+    // api/random/data/福利/10
+    @GET("api/random/data/{category}/{size}")
+    Observable<GankResult> getGankRandomPhoto(@Path("category") String category,
+                                              @Path("size") int size);
 }

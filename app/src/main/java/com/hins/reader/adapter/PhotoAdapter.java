@@ -9,8 +9,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.hins.reader.App;
 import com.hins.reader.R;
 import com.hins.reader.model.GankResult.GankResultBean;
+import com.hins.reader.util.GlideUtils;
 
 import java.util.List;
 
@@ -61,7 +63,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         GankResultBean result = mGankResultBeans.get(position);
-        Glide.with(mContext).load(result.getUrl() + "?imageView2/0/w/300").into(holder.gankPhoto);
+//        Glide.with(mContext).asBitmap().load(result.getUrl()).into(holder.gankPhoto);
+
+        Glide.with(App.application);
+        GlideUtils.newInstance().loadAutoHeightNetImage(result.getUrl(), holder.gankPhoto);
 
     }
 
