@@ -2,6 +2,7 @@ package com.hins.reader.ui.detail;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -9,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -20,6 +22,8 @@ import com.hins.reader.R;
 import com.hins.reader.model.StoryDetail;
 import com.hins.reader.network.ZhihuHttpHelper;
 import com.hins.reader.ui.bigimage.BigImageActivity;
+
+import java.lang.reflect.Method;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,14 +75,15 @@ public class StoryDetailActivity extends AppCompatActivity {
 
         setupWebView();
 
-        int mStoryId = getIntent().getIntExtra(STORY_ID, 0);
+        mStoryId = getIntent().getIntExtra(STORY_ID, 0);
 
-        initData(mStoryId);
+        initData();
 
     }
 
-     public void initData(int id) {
-        ZhihuHttpHelper.getInstance().getStoryDetail(id)
+
+    public void initData() {
+        ZhihuHttpHelper.getInstance().getStoryDetail(mStoryId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<StoryDetail>() {
@@ -182,15 +187,63 @@ public class StoryDetailActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.more_action, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 break;
+            case R.id.browse:
+                openInBrowser();
+                break;
+            case R.id.share:
+                share();
+                break;
             default:
                 break;
         }
         return true;
+    }
+
+    private void openInBrowser() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mStoryDetail.getShare_url()));
+        startActivity(intent);
+    }
+
+    private void share() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        StringBuilder builder = new StringBuilder();
+        builder.append(mStoryDetail.getTitle())
+                .append(" ")
+                .append(mStoryDetail.getShare_url())
+                .append(" " + "via by Reader" );
+        intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
+        startActivity(Intent.createChooser(intent, "分享至"));
+    }
+
+    /*
+          设置menu的文字和图片同时显示
+        */
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+        if (menu != null) {
+            if (menu.getClass().getSimpleName().equalsIgnoreCase("MenuBuilder")) {
+                try {
+                    Method method = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    method.setAccessible(true);
+                    method.invoke(menu, true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return super.onMenuOpened(featureId, menu);
     }
 
 }

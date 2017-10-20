@@ -46,4 +46,9 @@ public class GankHttpHelper {
                 .getGankRandomPhoto(category, size);
     }
 
+    public Observable<GankResult> getGankArticle(String category, int size, int page) {
+        return mRetrofit.create(Api.class)
+                .getGankAndroidArticle(category, size, page);
+    }
+
 }

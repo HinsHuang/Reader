@@ -27,4 +27,10 @@ public interface Api {
     @GET("api/random/data/{category}/{size}")
     Observable<GankResult> getGankRandomPhoto(@Path("category") String category,
                                               @Path("size") int size);
+
+    @GET("api/data/{category}/{size}/{page}")
+    Observable<GankResult> getGankAndroidArticle(@Path("category") String category,
+                                                 @Path("size") int size,
+                                                 @Path("page") int page);
+
 }

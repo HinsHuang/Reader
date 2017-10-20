@@ -42,7 +42,7 @@ public class GankResult {
         private String type;
         private String url;
         private boolean used;
-        private Object who;
+        private String who;
         private List<String> images;
 
         public String get_id() {
@@ -109,11 +109,11 @@ public class GankResult {
             this.used = used;
         }
 
-        public Object getWho() {
+        public String getWho() {
             return who;
         }
 
-        public void setWho(Object who) {
+        public void setWho(String who) {
             this.who = who;
         }
 

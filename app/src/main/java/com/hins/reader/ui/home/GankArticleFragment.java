@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.hins.reader.R;
-import com.hins.reader.adapter.PhotoAdapter;
+import com.hins.reader.adapter.GankArticleAdapter;
 import com.hins.reader.base.BasePagerFragment;
 import com.hins.reader.model.GankResult;
 import com.hins.reader.model.GankResult.GankResultBean;
@@ -25,30 +25,30 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by Hins on 2017/10/10.
+ * Created by Hins on 2017/10/11.
  */
 
-public class PhotoFragment extends BasePagerFragment {
+public class GankArticleFragment extends BasePagerFragment {
 
-    private static final String TAG = "PhotoFragment";
-
+    private static final String TAG = "GankArticleFragment";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     @BindView(R.id.article_swipe_refresh)
-    SwipeRefreshLayout mPhotoSwipeRefresh;
+    SwipeRefreshLayout mArticleSwipeRefresh;
 
-    private LinearLayoutManager mLinearLayoutManager;
-    private PhotoAdapter mPhotoAdapter;
+    private LinearLayoutManager mLayoutManager;
+    private GankArticleAdapter mGankArticleAdapter;
 
     private List<GankResultBean> mGankResultBeans;
 
-    private String mCategory = "福利";
-    private int mSize = 10;
-    private int mPage = 1;
+    private String mCategory;
+    private int mSize;
+    private int mPage;
 
-    public static PhotoFragment newInstance() {
-        return new PhotoFragment();
+
+    public static GankArticleFragment newInstance() {
+        return new GankArticleFragment();
     }
 
     @Override
@@ -56,39 +56,46 @@ public class PhotoFragment extends BasePagerFragment {
         super.onCreate(savedInstanceState);
 
         mGankResultBeans = new ArrayList<>();
+        mCategory = "Android";
+        mSize = 10;
+        mPage = 1;
+
+        Log.d(TAG, "onCreate: ");
     }
+
 
     @Override
     protected int getLayoutResID() {
-        return R.layout.fragment_photo;
+        return R.layout.fragment_gank_article;
     }
 
     @Override
     protected void initView() {
-        mLinearLayoutManager = new LinearLayoutManager(mContext);
-        mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mPhotoSwipeRefresh.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary, R.color.colorAccent);
-        mPhotoSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+        mArticleSwipeRefresh.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary, R.color.colorAccent);
+        mArticleSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refresh();
             }
         });
+
+        mLayoutManager = new LinearLayoutManager(mContext);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             boolean isSlidingToLast = false;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+
                 LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                //当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    // 获取最后一个完全显示的item position
-                    int lastVisiableItem = manager.findLastVisibleItemPosition();
-                    int totalItemCount = manager.getItemCount();
-                    // 判断是否滚动到底部并且是向下滑动
-                    if (lastVisiableItem == (totalItemCount - 1) ) {
+                    int lastVisibleItem = manager.findLastVisibleItemPosition();
+                    int totalItems = manager.getItemCount();
+                    if (lastVisibleItem == totalItems -1 && isSlidingToLast) {
                         loadMore();
                     }
                 }
+
                 super.onScrollStateChanged(recyclerView, newState);
             }
 
@@ -99,27 +106,27 @@ public class PhotoFragment extends BasePagerFragment {
             }
         });
 
+
     }
 
     @Override
     protected void initData() {
+        mArticleSwipeRefresh.setRefreshing(true);
 
-        mPhotoSwipeRefresh.setRefreshing(true);
-
-        GankHttpHelper.getInstance().getGankItemByCategory(mCategory, mSize)
+        GankHttpHelper.getInstance()
+                .getGankArticle(mCategory, mSize, mPage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<GankResult>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-
+                        Log.d(TAG, "onSubscribe: ");
                     }
 
                     @Override
                     public void onNext(@NonNull GankResult gankResult) {
 
                         setRecyclerView(true, gankResult.getResults());
-                        mPhotoSwipeRefresh.setRefreshing(false);
 
                     }
 
@@ -131,16 +138,15 @@ public class PhotoFragment extends BasePagerFragment {
 
                     @Override
                     public void onComplete() {
-
+                        mArticleSwipeRefresh.setRefreshing(false);
                     }
                 });
 
     }
 
     private void loadMore() {
-        Log.d(TAG, "loadMore: ");
-
-        GankHttpHelper.getInstance().getGankItemByCategory(mCategory, mSize)
+        GankHttpHelper.getInstance()
+                .getGankArticle(mCategory, mSize, ++mPage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<GankResult>() {
@@ -151,23 +157,24 @@ public class PhotoFragment extends BasePagerFragment {
 
                     @Override
                     public void onNext(@NonNull GankResult gankResult) {
-
                         setRecyclerView(false, gankResult.getResults());
-
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        Log.e(TAG, "onError: ", e);
 
                     }
 
                     @Override
                     public void onComplete() {
 
-
                     }
                 });
+    }
+
+    private void refresh() {
+        mPage = 1;
+        initData();
     }
 
     private void setRecyclerView(boolean isClear, List<GankResultBean> gankResultBeans) {
@@ -177,18 +184,11 @@ public class PhotoFragment extends BasePagerFragment {
         }
         mGankResultBeans.addAll(gankResultBeans);
 
-        if (mPhotoAdapter == null) {
-            mPhotoAdapter = new PhotoAdapter(mGankResultBeans);
-            mRecyclerView.setAdapter(mPhotoAdapter);
+        if (mGankArticleAdapter == null) {
+            mGankArticleAdapter = new GankArticleAdapter(mGankResultBeans);
+            mRecyclerView.setAdapter(mGankArticleAdapter);
         } else {
-            mPhotoAdapter.notifyDataSetChanged();
+            mGankArticleAdapter.notifyDataSetChanged();
         }
-
     }
-
-    private void refresh() {
-        mPage = 1;
-        initData();
-    }
-
 }

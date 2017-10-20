@@ -58,11 +58,11 @@ public class MainFragment extends Fragment {
         mFragments = new ArrayList<>();
 
         mTitles.add("知乎日报");
-        mTitles.add("干货集中营");
+        mTitles.add("安卓文章");
         mTitles.add("干货美图");
 
         mFragments.add(HomeFragment.newInstance());
-        mFragments.add(GanhuoFragment.newInstance());
+        mFragments.add(GankArticleFragment.newInstance());
         mFragments.add(PhotoFragment.newInstance());
 
         mMainPagerAdapter = new MainPagerAdapter(getChildFragmentManager(), mFragments, mTitles);

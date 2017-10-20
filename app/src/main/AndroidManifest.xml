@@ -12,21 +12,36 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.home.MainActivity">
+        <activity
+            android:name=".ui.home.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ui.setting.SettingActivity">
-        </activity>
-        <activity android:name=".ui.detail.StoryDetailActivity">
-        </activity>
-        <activity android:name=".ui.bigimage.BigImageActivity">
-        </activity>
-        <activity android:name=".ui.bigimage.PhotoViewActivity">
-        </activity>
+
+        <activity
+            android:name=".ui.setting.SettingActivity"
+            android:label="设置"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+
+        <activity
+            android:name=".ui.detail.StoryDetailActivity"
+            android:label="文章详情"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+
+        <activity android:name=".ui.bigimage.BigImageActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+
+        <activity android:name=".ui.bigimage.PhotoViewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+
+        <activity android:name=".ui.detail.GankArticleDetailActivity"
+            android:label="Android 文章"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+
     </application>
 
 </manifest>
