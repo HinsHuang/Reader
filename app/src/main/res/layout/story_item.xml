@@ -8,6 +8,7 @@
     app:cardCornerRadius="5dp">
 
     <LinearLayout
+        android:background="@color/windowBackground"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -21,7 +22,7 @@
             android:textSize="20sp"
             android:gravity="center"
             android:ellipsize="end"
-            android:textColor="@color/text_color"
+            android:textColor="@color/textColor"
             />
 
         <ImageView

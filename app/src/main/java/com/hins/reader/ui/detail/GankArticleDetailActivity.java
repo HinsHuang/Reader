@@ -64,7 +64,7 @@ public class GankArticleDetailActivity extends AppCompatActivity {
 
         mProgressBar.setMax(100);
 
-
+        mWebView.setBackgroundColor(0);
 
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.setWebViewClient(new WebViewClient());
@@ -85,6 +85,7 @@ public class GankArticleDetailActivity extends AppCompatActivity {
             }
         });
         mWebView.loadUrl(mUrl);
+
     }
 
     @Override

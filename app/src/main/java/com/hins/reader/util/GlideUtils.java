@@ -30,8 +30,8 @@ public class GlideUtils {
     public GlideUtils() {
         mOptions = new RequestOptions()
                 .centerCrop()
-                .placeholder(R.drawable.icon_white_back)
-                .error(R.drawable.icon_white_back)
+                .placeholder(R.drawable.ic_white_back)
+                .error(R.drawable.ic_white_back)
                 .priority(Priority.HIGH)
                 .diskCacheStrategy(DiskCacheStrategy.ALL);
     }
@@ -49,8 +49,8 @@ public class GlideUtils {
     public void loadAutoHeightNetImage(String url, ImageView iv) {
         RequestOptions options = new RequestOptions()
                 .centerCrop()
-                .placeholder(R.drawable.icon_white_back)
-                .error(R.drawable.icon_white_back)
+                .placeholder(R.drawable.ic_white_back)
+                .error(R.drawable.ic_white_back)
                 .priority(Priority.HIGH)
                 .override(DensityUtil.getScreenWidth(App.application), Target.SIZE_ORIGINAL)
                 .diskCacheStrategy(DiskCacheStrategy.ALL);
@@ -65,8 +65,8 @@ public class GlideUtils {
     public void loadBlackDefaultImage(String url, ImageView iv) {
         RequestOptions mOptions = new RequestOptions()
                 .fitCenter()
-                .placeholder(R.color.md_black)
-                .error(R.color.md_black)
+                .placeholder(R.color.black)
+                .error(R.color.black)
                 .priority(Priority.HIGH)
                 .diskCacheStrategy(DiskCacheStrategy.ALL);
 

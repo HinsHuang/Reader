@@ -13,9 +13,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.hins.reader.R;
+import com.hins.reader.adapter.ErrorHandleAdapter;
 import com.hins.reader.adapter.HomeAdapter;
 import com.hins.reader.adapter.TopStoryPagerAdapter;
 import com.hins.reader.base.BasePagerFragment;
@@ -44,7 +46,7 @@ public class HomeFragment extends BasePagerFragment {
 
     private static final String TAG = "HomeFragment";
 
-    @BindView(R.id.story_swipe_refresh)
+    @BindView(R.id.home_swipe_refresh)
     SwipeRefreshLayout mSwipeRefresh;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -121,6 +123,8 @@ public class HomeFragment extends BasePagerFragment {
 
     @Override
     protected void initView() {
+
+        Log.d(TAG, "initView: ");
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.header_images, mContainer, false);
 
         mHeaderViewPager = (ViewPager) mHeaderView.findViewById(R.id.header_view_pager);
@@ -132,12 +136,15 @@ public class HomeFragment extends BasePagerFragment {
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+
+                Log.d(TAG, "onRefresh: ");
                 refresh();
             }
         });
 
         mLayoutManager = new LinearLayoutManager(mContext);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             boolean isSlidingToLast = false;
             @Override
@@ -174,8 +181,11 @@ public class HomeFragment extends BasePagerFragment {
 
     @Override
     protected void initData() {
+
         mSwipeRefresh.setRefreshing(true);
 
+        Log.d(TAG, "initData: ");
+        mSwipeRefresh.setRefreshing(true);
         ZhihuHttpHelper.getInstance().getLatestNews()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -198,6 +208,12 @@ public class HomeFragment extends BasePagerFragment {
                     public void onError(@NonNull Throwable e) {
                         Log.e(TAG, "onError: ", e);
                         mSwipeRefresh.setRefreshing(false);
+                        if (mTopStories.size() == 0) {
+                            ErrorHandleAdapter adapter = new ErrorHandleAdapter();
+                            mRecyclerView.setAdapter(adapter);
+                        } else {
+                            Toast.makeText(mContext, "请再次检查网络", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -206,7 +222,6 @@ public class HomeFragment extends BasePagerFragment {
                     }
                 });
 
-        Log.d(TAG, "initData: ");
     }
 
     private void initHeaderView() {

@@ -17,11 +17,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.hins.reader.R;
 import com.hins.reader.model.StoryDetail;
 import com.hins.reader.network.ZhihuHttpHelper;
 import com.hins.reader.ui.bigimage.BigImageActivity;
+import com.hins.reader.util.GlideUtils;
 
 import java.lang.reflect.Method;
 
@@ -118,6 +118,7 @@ public class StoryDetailActivity extends AppCompatActivity {
     }
 
     private void setupWebView() {
+        mWebView.setBackgroundColor(0);
         WebSettings settings = mWebView.getSettings();
         //设置js交互的权限
         settings.setJavaScriptEnabled(true);
@@ -156,7 +157,8 @@ public class StoryDetailActivity extends AppCompatActivity {
 
     private void updateUI(StoryDetail storyDetail) {
         mCollapsingToolbar.setTitle(storyDetail.getTitle());
-        Glide.with(this).load(storyDetail.getImage()).into(mZhihuStoryImage);
+//        Glide.with(this).load(storyDetail.getImage()).into(mZhihuStoryImage);
+        GlideUtils.newInstance().loadNetImage(storyDetail.getImage(), mZhihuStoryImage);
 
         String html = converContent(storyDetail.getBody());
 
@@ -164,6 +166,7 @@ public class StoryDetailActivity extends AppCompatActivity {
 
     }
 
+    @android.support.annotation.NonNull
     private String converContent(String content) {
         content = content.replaceAll("<div class=\"headline\">", "");
         content = content.replaceAll("<div class=\"img-place-holder\">", "");

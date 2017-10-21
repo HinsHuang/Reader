@@ -21,27 +21,26 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.setting.SettingActivity"
-            android:label="设置"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="设置"/>
         <activity
             android:name=".ui.detail.StoryDetailActivity"
-            android:label="文章详情"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="文章详情"/>
+        <activity
+            android:name=".ui.bigimage.BigImageActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
-
-        <activity android:name=".ui.bigimage.BigImageActivity"
+        <activity
+            android:name=".ui.bigimage.PhotoViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
-
-        <activity android:name=".ui.bigimage.PhotoViewActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-
-        <activity android:name=".ui.detail.GankArticleDetailActivity"
-            android:label="Android 文章"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-
+        <activity
+            android:name=".ui.detail.GankArticleDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Android 文章"/>
+        <activity android:name=".ui.about.AboutActivity">
+        </activity>
     </application>
 
 </manifest>

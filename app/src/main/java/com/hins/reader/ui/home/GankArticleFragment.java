@@ -6,8 +6,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.hins.reader.R;
+import com.hins.reader.adapter.ErrorHandleAdapter;
 import com.hins.reader.adapter.GankArticleAdapter;
 import com.hins.reader.base.BasePagerFragment;
 import com.hins.reader.model.GankResult;
@@ -133,7 +135,13 @@ public class GankArticleFragment extends BasePagerFragment {
                     @Override
                     public void onError(@NonNull Throwable e) {
                         Log.e(TAG, "onError: ", e);
-
+                        mArticleSwipeRefresh.setRefreshing(false);
+                        if (mGankResultBeans.size() == 0) {
+                            ErrorHandleAdapter adapter = new ErrorHandleAdapter();
+                            mRecyclerView.setAdapter(adapter);
+                        } else {
+                            Toast.makeText(mContext, "请再次检查网络", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override

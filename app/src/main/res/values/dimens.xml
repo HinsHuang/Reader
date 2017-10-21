@@ -6,4 +6,6 @@
 
     <dimen name="point_size">6dp</dimen>
     <dimen name="point_margin">6dp</dimen>
+
+    <dimen name="progressbar_height">2dp</dimen>
 </resources>
