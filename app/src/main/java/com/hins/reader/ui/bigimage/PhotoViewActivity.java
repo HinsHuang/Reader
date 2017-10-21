@@ -19,10 +19,10 @@ import butterknife.ButterKnife;
 
 public class PhotoViewActivity extends AppCompatActivity {
 
-    public static final String TAG = "PhotoViewActivity";
+    private static final String TAG = "PhotoViewActivity";
 
-    public static final String IMAGE_URL_LIST = "com.hins.reader.ui.bigimage.image_url_list";
-    public static final String IMAGE_POS = "com.hins.reader.ui.bigimage.image_pos";
+    private static final String IMAGE_URL_LIST = "com.hins.reader.ui.bigimage.image_url_list";
+    private static final String IMAGE_POS = "com.hins.reader.ui.bigimage.image_pos";
 
     @BindView(R.id.photo_view_pager)
     ViewPager mPhotoViewPager;
@@ -55,11 +55,11 @@ public class PhotoViewActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        mImageUrls = (List<String>) getIntent().getSerializableExtra("image_url_list");
+        mImageUrls = (List<String>) getIntent().getSerializableExtra(IMAGE_URL_LIST);
         if (mImageUrls.size() == 0) {
             finish();
         }
-        mPosition = getIntent().getIntExtra("image_pos", 0);
+        mPosition = getIntent().getIntExtra(IMAGE_POS, 0);
 
     }
 

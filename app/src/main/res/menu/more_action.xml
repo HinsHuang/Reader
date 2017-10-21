@@ -4,15 +4,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/browse"
-        android:title="在浏览器打开"
-        android:icon="@drawable/ic_browse"
+        android:id="@+id/share"
+        android:title=" 分享"
+        android:icon="@drawable/ic_share"
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/share"
-        android:title="分享"
-        android:icon="@drawable/ic_share"
+        android:id="@+id/browse"
+        android:title=" 在浏览器打开"
+        android:icon="@drawable/ic_browse"
         app:showAsAction="never"/>
+
 
 </menu>

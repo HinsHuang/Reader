@@ -1,7 +1,6 @@
 package com.hins.reader.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,11 +85,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
                 }
 
                 Context context = holder.gankPhoto.getContext();
-//                PhotoViewActivity.start(context, (Serializable) imageUrls, position);
-                Intent intent = new Intent(context, PhotoViewActivity.class);
-                intent.putExtra("image_url_list", (Serializable) imageUrls);
-                intent.putExtra("image_pos", position);
-                context.startActivity(intent);
+                PhotoViewActivity.start(context, (Serializable) imageUrls, position);
 
             }
         });
