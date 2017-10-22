@@ -3,17 +3,17 @@ package com.hins.reader.ui.bigimage;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.hins.reader.R;
+import com.hins.reader.base.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class BigImageActivity extends AppCompatActivity {
+public class BigImageActivity extends BaseActivity {
 
     public static final String IMAGE_URL = "com.hins.reader.ui.bigimage.image_url";
     @BindView(R.id.photo_view)

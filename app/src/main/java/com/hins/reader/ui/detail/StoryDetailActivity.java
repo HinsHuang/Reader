@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -18,6 +17,7 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 
 import com.hins.reader.R;
+import com.hins.reader.base.BaseActivity;
 import com.hins.reader.model.StoryDetail;
 import com.hins.reader.network.ZhihuHttpHelper;
 import com.hins.reader.ui.bigimage.BigImageActivity;
@@ -33,7 +33,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class StoryDetailActivity extends AppCompatActivity {
+public class StoryDetailActivity extends BaseActivity {
 
     private static final String TAG = "StoryDetailActivity";
 

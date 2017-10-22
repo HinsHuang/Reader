@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -15,12 +14,13 @@ import android.widget.TextView;
 
 import com.hins.reader.App;
 import com.hins.reader.R;
+import com.hins.reader.base.BaseActivity;
 import com.hins.reader.util.SharedPrefUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SettingActivity extends AppCompatActivity {
+public class SettingActivity extends BaseActivity {
 
     private static final String TAG = "SettingActivity";
 
